@@ -22,6 +22,10 @@ Fraction::Fraction(long long num, long long den, bool simp) {
 }
 
 Fraction::Fraction(Fraction const& other) {
+	copy(other);
+}
+
+void Fraction::copy(Fraction const& other) {
 	_numerator = other.numerator();
 	_denominator = other.denominator();
 }
@@ -106,10 +110,18 @@ Fraction::Fraction(long long num, long long den, bool simp) {
 
 Fraction::Fraction(Fraction const& other) {
 	mpq_init(_frac);
+	copy(other);
+}
+
+void Fraction::copy(Fraction const& other) {
 	mpq_set(_frac, other._frac);
 }
 
 Fraction::Fraction() { mpq_init(_frac); }
+
+Fraction::~Fraction() {
+	mpq_clear(_frac);
+}
 
 Fraction Fraction::inverse() const {
 	Fraction res;

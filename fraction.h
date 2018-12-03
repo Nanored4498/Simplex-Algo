@@ -15,6 +15,12 @@ public:
 	Fraction(Fraction const& other);
 	Fraction();
 
+	void copy(Fraction const& other);
+
+	#if VERSION == 1
+	~Fraction();
+	#endif
+
 	Fraction inverse() const;
 
 	Fraction operator-() const;

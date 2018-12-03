@@ -18,12 +18,12 @@ LPArray::LPArray(LinearProg const& prog) {
 
 	// Initialization of the first line for phase 1
 	for(int j = 0; j < m2; j++)
-		mat[0][j] = 0;
+		mat[0][j].copy(0);
 	// And we store the objective for phase 2
 	for(int j = 0; j < prog.nV; j++)
-		objective[j] = prog.objective[j];
+		objective[j].copy(prog.objective[j]);
 	for(int j = prog.nV; j < m; j++)
-		objective[j] = 0;
+		objective[j].copy(0);
 
 	// Initialization of constraints
 	int new_var = m-1;
@@ -31,17 +31,17 @@ LPArray::LPArray(LinearProg const& prog) {
 		Fraction rhc = prog.rh_constraints[i];
 		bool positive = rhc >= 0;
 		for(int j = 0; j < prog.nV; j++)
-			mat[i+1][j] = positive ? prog.lh_constraints[i][j] : -prog.lh_constraints[i][j];
+			mat[i+1][j].copy(positive ? prog.lh_constraints[i][j] : -prog.lh_constraints[i][j]);
 		for(int j = prog.nV; j < m2; j++)
-			mat[i+1][j] = 0;
-		mat[i+1][prog.nV+i] = positive ? 1 : -1;
-		mat[i+1][m2-1] = positive ? rhc : -rhc;
+			mat[i+1][j].copy(0);
+		mat[i+1][prog.nV+i].copy(positive ? 1 : -1);
+		mat[i+1][m2-1].copy(positive ? rhc : -rhc);
 		if(!positive) {
 			basic_vars.insert(new_var);
 			map_const_var[i+1] = new_var;
 			non_basic_vars.insert(prog.nV + i);
-			mat[i+1][new_var++] = 1;
-			mat[0][prog.nV+i] = -1;
+			mat[i+1][new_var++].copy(1);
+			mat[0][prog.nV+i].copy(-1);
 			for(int j = 0; j < prog.nV; j++)
 				mat[0][j] += mat[i+1][j];
 			mat[0][m2-1] -= rhc;
@@ -84,7 +84,7 @@ void LPArray::do_pivot(int entering_var, int constraint) {
 		if(i != constraint) {
 			Fraction mul = mat[i][entering_var];
 			for(int j = 0; j < m; j++)
-				mat[i][j] -= mul * mat[constraint][j];
+			mat[i][j] -= mul * mat[constraint][j];
 		}
 	}
 	int leaving_var = map_const_var[constraint];
@@ -106,7 +106,7 @@ int LPArray::choose_entering(int rule) const {
 		entering = -1;
 		for(int v : non_basic_vars)
 			if(mat[0][v] > max) {
-				max = mat[0][v];
+				max.copy(mat[0][v]);
 				entering = v;
 			}
 		return entering;
@@ -124,6 +124,7 @@ int LPArray::choose_entering(int rule) const {
 				min = num_entering[v];
 				entering = v;
 			}
+		if(entering != -1) num_entering[entering] ++;
 		return entering;
 
 	default:
@@ -139,9 +140,9 @@ int LPArray::choose_constraint(int entering) const {
 	Fraction min, min2;
 	for(int i = 1; i < n; i++) {
 		if(mat[i][entering] > 0) {
-			min2 = mat[i][m-1] / mat[i][entering];
+			min2.copy(mat[i][m-1] / mat[i][entering]);
 			if(cons == -1 || min2 < min || (min2 == min && map_const_var[i] < leaving)) {
-				min = min2;
+				min.copy(min2);
 				cons = i;
 				leaving = map_const_var[i];
 			}
@@ -156,7 +157,7 @@ bool LPArray::one_phase(int rule, bool show) {
 		std::cout << "The initial tableau is:\n\n";
 		print();
 	}
-	while((entering = choose_entering(rule)) != -1)
+	while((entering = choose_entering(rule)) != -1) {
 		if((constraint = choose_constraint(entering)) == -1)
 			return true;
 		else {
@@ -168,6 +169,7 @@ bool LPArray::one_phase(int rule, bool show) {
 				print();
 			}
 		}
+	}
 	return false;
 }
 
@@ -183,10 +185,10 @@ void LPArray::step_one_to_two() {
 			non_basic_vars.erase(j);
 		}
 	for(int i = 1; i < n; i++)
-		mat[i][m2-1] = mat[i][m-1];
+		mat[i][m2-1].copy(mat[i][m-1]);
 	m = m2;
 	for(int j = 0; j < m; j++)
-		mat[0][j] = objective[j];
+		mat[0][j].copy(objective[j]);
 	for(int i = 1; i < n; i++) {
 		int bv = map_const_var[i];
 		Fraction mul = mat[0][bv];
@@ -209,6 +211,7 @@ void LPArray::print() const {
 	}
 	line_size += (m-1)*2 + 1;
 	for(int i = 0; i < n; i++) {
+		std::cout << ' ';
 		for(int j = 0; j < m; j++) {
 			int nspaces = max_size[j] - mat[i][j].str_len();
 			int ns2 = nspaces / 2;
@@ -221,7 +224,7 @@ void LPArray::print() const {
 		}
 		if(i == 0) {
 			for(int j = 0; j < line_size; j++) std::cout << '-';
-			std::cout << '\n';
+			std::cout << "--\n";
 		}
 	}
 }
@@ -230,10 +233,10 @@ Fraction* LPArray::get_solution() const {
 	int nV = m - n;
 	Fraction *res = new Fraction[nV];
 	for(int j = 0; j < nV; j++)
-		res[j] = 0;
+		res[j].copy(0);
 	for(int i = 1; i < n; i++) {
 		int v = map_const_var[i];
-		if(v < nV) res[v] = mat[i][m-1];
+		if(v < nV) res[v].copy(mat[i][m-1]);
 	}
 	return res;
 }

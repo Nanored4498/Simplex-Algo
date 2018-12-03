@@ -12,7 +12,7 @@ $(EXEC): $(SRC)
 	$(CXX) $(SRC) -o $(EXEC) -Wall -lgmpxx -lgmp
 
 %.out: %.dat $(EXEC)
-	./$(EXEC) -b $< > $@
+	./$(EXEC) -o $< > $@
 
 clean:
 	rm tests/*.out $(EXEC)
