@@ -35,7 +35,7 @@ public:
 	long long numerator() const;
 	long long denominator() const;
 	#endif
-	std::string str() const;
+	char* str() const;
 
 private:
 	#if VERSION == 0

@@ -1,3 +1,7 @@
+## Comment ça marche ?
+
+Vous pouvez taper `./coudert-exec -h` pour savoir comment marche l'exécutable.
+
 Troisième règle :
 
 La troisième règle fait rentrer la variable qui est entrée le moins de fois dans la base.

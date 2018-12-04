@@ -227,6 +227,7 @@ void LPArray::print() const {
 			std::cout << "--\n";
 		}
 	}
+	delete[] max_size;
 }
 
 Fraction* LPArray::get_solution() const {

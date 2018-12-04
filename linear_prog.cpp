@@ -86,6 +86,7 @@ void LinearProg::print() const {
 		std::cout << "x_" << j+1;
 	}
 	std::cout << " are non-negative\n";
+	delete[] max_size;
 }
 
 void LinearProg::simplex_solve(int rule, bool show) const {
@@ -113,6 +114,7 @@ void LinearProg::simplex_solve(int rule, bool show) const {
 		if(i > 0) std::cout << ", ";
 		std::cout << "x_" << i+1 << " = " << solution[i];
 	}
+	delete[] solution;
 	std::cout << "\nThe objective value of this solution is:  " << a.get_result();
 	std::cout << "\nThe number of pivots is:  " << a.get_num_pivots();
 	std::cout << "\nThe pivot rule used:  " << LPArray::getRuleName(rule) << "\n";

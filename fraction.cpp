@@ -3,6 +3,7 @@
 #include "fraction.h"
 
 #if VERSION == 0
+#include <string.h>
 
 long long gcd(long long a, long long b) {
 	if(b == 0) return a;
@@ -57,11 +58,13 @@ Fraction Fraction::operator*=(Fraction const& other) {
 }
 Fraction Fraction::operator/=(Fraction const& other) { return (*this *= other.inverse()); }
 
-std::string Fraction::str() const {
+char* Fraction::str() const {
     std::string res = std::to_string(_numerator);
 	if(_denominator != 1)
 		res += "/" + std::to_string(_denominator);
-	return res;
+	char* c = (char *) malloc(res.size()+1);
+	strcpy(c, res.c_str());
+	return c;
 }
 
 std::istream& operator>>(std::istream& stream, Fraction &fraction) {
@@ -155,7 +158,7 @@ Fraction Fraction::operator/=(Fraction const& other)  {
 	return *this;
 }
 
-std::string Fraction::str() const { return mpq_get_str(NULL, 10, _frac); }
+char* Fraction::str() const { return mpq_get_str(NULL, 10, _frac); }
 
 std::istream& operator>>(std::istream& stream, Fraction &fraction) {
 	std::string s;
@@ -173,10 +176,18 @@ bool operator>(Fraction const& a, Fraction const& b) { return mpq_cmp(a._frac, b
 
 #endif
 
-int Fraction::str_len() const { return str().size(); }
+int Fraction::str_len() const {
+	char* str = this->str();
+	int len = ((std::string) str).size();
+	free(str);
+	return len;
+}
 
 std::ostream& operator<<(std::ostream& stream, Fraction const& fraction) {
-    return stream << fraction.str();
+	char* str = fraction.str();
+    stream << str;
+	free(str);
+	return stream;
 }
 
 Fraction operator+(Fraction const& a, Fraction const&b) { Fraction res = a; return res += b; }
