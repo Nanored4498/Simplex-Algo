@@ -160,7 +160,7 @@ std::string Fraction::str() const { return mpq_get_str(NULL, 10, _frac); }
 std::istream& operator>>(std::istream& stream, Fraction &fraction) {
 	std::string s;
 	stream >> s;
-	mpq_set_str(fraction._frac, s.data(), 10);
+	mpq_set_str(fraction._frac, s.c_str(), 10);
 	return stream;
 }
 

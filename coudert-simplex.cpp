@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 int main(int argc, char* argv[]) {
 	bool use_file = false;
 	bool show = false;
