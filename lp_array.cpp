@@ -1,4 +1,5 @@
 #include "lp_array.h"
+#include "assert.h"
 
 LPArray::LPArray(LinearProg const& prog) {
 	num_pivot = 0;
@@ -174,21 +175,26 @@ bool LPArray::one_phase(int rule, bool show) {
 }
 
 void LPArray::step_one_to_two() {
+	// Remove additional variables of the phase 1 from basis
 	for(int j = m2-1; j < m-1; j++)
 		if(non_basic_vars.count(j) > 0)
 			non_basic_vars.erase(j);
 		else {
 			int entering = *(non_basic_vars.begin());
-			int constraint = 0;
-			while(mat[++constraint][j] == 0);
+			int constraint = 1;
+			while(mat[constraint++][j] == 0)
+				assert(constraint < n);
 			do_pivot(entering, constraint);
 			non_basic_vars.erase(j);
 		}
+	// copy right-hand side of constraints
 	for(int i = 1; i < n; i++)
 		mat[i][m2-1].copy(mat[i][m-1]);
 	m = m2;
+	// copy objective function
 	for(int j = 0; j < m; j++)
 		mat[0][j].copy(objective[j]);
+	// Zero the coefficients of the variables in the basis inside the objective function
 	for(int i = 1; i < n; i++) {
 		int bv = map_const_var[i];
 		Fraction mul = mat[0][bv];

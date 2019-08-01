@@ -6,11 +6,13 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	bool use_file = false;
-	bool show = false;
-	bool help = false;
-	int rule = -1;
-	string filename;
+
+	bool use_file = false; // Si on utilise un fichier
+	bool show = false; // Si le mode verbose est activé
+	bool help = false; // Si on affiche l'aide
+	int rule = -1; // Numéro de la règle
+	string filename; // Nom du fichier dans lequel on lit
+
 	for(int i = 1; i < argc; i++) {
 		char* p = argv[i];
 		if(p[0] == '-') {
@@ -44,6 +46,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
+
 	if(help) {
 		cout << "This is a simplex algorithm !\n"
 				"Usage: ./coudert-exec [-h] [-m -b -o] [-v] [filename] .\n"
@@ -57,13 +60,16 @@ int main(int argc, char* argv[]) {
 				"\t[filename]: Name of the file where is stored the linear program. If there is no filename the program is readen in standard input.\n";
 				return 0;
 	}
+
 	if(rule == -1) {
 		cerr << "A rule should be given. Use -h option for more details.\n";
 		return 1;
 	}
+
 	if(use_file)
 		LinearProg(filename).simplex_solve(rule, show);
 	else
 		LinearProg(cin).simplex_solve(rule, show);
+	
 	return 0;
 }

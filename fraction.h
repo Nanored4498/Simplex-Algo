@@ -10,17 +10,19 @@
 
 class Fraction {
 public:
-	// Constructors
+	// Constructeurs
 	Fraction(long long num, long long den = 1, bool simp = true);
 	Fraction(Fraction const& other);
 	Fraction();
 
+	// Permet de copier le contenu de other
 	void copy(Fraction const& other);
 
 	#if VERSION == 1
-	~Fraction();
+	~Fraction(); // Important pour clear les mpq_t
 	#endif
 
+	// Retourne l'inverse de la fraction
 	Fraction inverse() const;
 
 	Fraction operator-() const;
@@ -29,18 +31,20 @@ public:
 	Fraction operator*=(Fraction const& other);
 	Fraction operator/=(Fraction const& other);
 
+	// Retourne la longueur de la représentation en chaîne de caractères de la fraction
 	int str_len() const;
 
 	#if VERSION == 0
 	long long numerator() const;
 	long long denominator() const;
 	#endif
+	// Retourne la représentation en chaîne de caractères de la fraction
 	char* str() const;
 
 private:
 	#if VERSION == 0
 	long long _numerator, _denominator;
-	void simplify();
+	void simplify(); // Simplifie avec le PGCD du numérateur et du dénominateur
 	#else
 	mpq_t _frac;
 	friend std::istream& operator>>(std::istream &stream, Fraction &fraction);

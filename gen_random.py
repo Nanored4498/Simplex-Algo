@@ -2,6 +2,8 @@
 import sys
 from random import random
 
+neg_rh = False
+
 if len(sys.argv) < 3:
 	print("The dimension is needed as argument")
 	exit(-1)
@@ -16,7 +18,10 @@ for _ in range(d):
 print()
 
 for _ in range(n):
-	print(10000, end=' ')
+	if(neg_rh and random() < 0.5):
+		print(-10000, end=' ')
+	else:
+		print(10000, end=' ')
 print()
 
 for _ in range(n):
